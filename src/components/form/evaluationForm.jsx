@@ -1,20 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import config from "./../../config";
 import Stars from "./stars";
-
-const Title = styled.h1`
-  margin-bottom: 1rem;
-  color: #7371fc;
-`;
-
-const Error = styled.div`
-  background: #ea999957;
-  color: rgb(160, 6, 6);
-  padding: 5px;
-  border-radius: 5px;
-  margin-bottom: 1rem;
-`;
 
 const Form = styled.div`
   display: flex;
@@ -23,6 +12,22 @@ const Form = styled.div`
   max-width: 34rem;
   margin: auto;
   padding: 2rem;
+`;
+
+const Title = styled.h1`
+  margin-bottom: 1rem;
+  color: #7371fc;
+`;
+
+const Error = styled.div`
+  border: 2px dashed rgb(160, 6, 6);
+  background: #ea999957;
+  color: rgb(160, 6, 6);
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
 `;
 
 const FormElement = styled.div`
@@ -34,6 +39,24 @@ const FormElement = styled.div`
 
 const Input = styled.input`
   border: 2px solid #e5e5e5;
+  border-radius: 3px;
+  padding: 6px;
+
+  :hover {
+    border: 2px solid #bfbfbf;
+  }
+
+  :focus,
+  :active {
+    border: 2px solid #2d7ff9;
+    box-shadow: inset 0 0 0 2px #cfdfff;
+  }
+`;
+
+const Select = styled.select`
+  background-color: #fff;
+  border: 2px solid #e5e5e5;
+  border-radius: 3px;
   padding: 6px;
 
   :hover {
@@ -49,6 +72,7 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   border: 2px solid #e5e5e5;
+  border-radius: 3px;
   padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 1rem;
@@ -74,9 +98,15 @@ const Button = styled.button`
   margin-right: 1rem;
 `;
 
+const Red = styled.span`
+  color: red;
+`;
+
 const EvaluationForm = () => {
+  const { courseId } = useParams();
+
   const [formState, setFormState] = useState({
-    user_id: -1,
+    user_id: 1,
     section_id: -1,
     instructor_rating: 0,
     course_rating: 0,
@@ -85,15 +115,31 @@ const EvaluationForm = () => {
     comments: "",
   });
 
+  const [courseName, setCourseName] = useState("");
+  const [sectionOptions, setSectionOptions] = useState([]);
+
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data } = await axios.get(
+        `${config.search_api}/sections/${courseId}?key=thisisasecret@!(*)_123`
+      );
+      setSectionOptions(data.sections);
+      if (data.course) {
+        const { subject, number, title } = data.course;
+        setCourseName(`${subject} ${number} — ${title}`);
+      }
+    }
+    fetchData();
+  }, [courseId]);
 
   const handleSubmit = async () => {
     try {
-      console.log(formState);
-      await axios.post(
-        "https://rate-backend-api.herokuapp.com/evals",
-        formState
-      );
+      await axios.post(`${config.eval_api}/evals?key=thisisasecret@!(*)_123`, {
+        ...formState,
+        course_id: courseId,
+      });
     } catch (err) {
       setError(err.response.data.message);
     }
@@ -124,7 +170,41 @@ const EvaluationForm = () => {
       {error && <Error>{error}</Error>}
 
       <FormElement>
-        <label>Instruction Rating</label>
+        <label>
+          Course <Red>*</Red>
+        </label>
+        <Input type="text" value={courseName} disabled />
+      </FormElement>
+
+      <FormElement>
+        <label>
+          Section <Red>*</Red>
+        </label>
+        <Select
+          onChange={(e) => {
+            handleChange({
+              name: "section_id",
+              value: e.target[e.target.selectedIndex].value,
+            });
+          }}
+        >
+          <option value={-1}>-</option>
+          {sectionOptions.map(({ _id, section, instructors }) => {
+            return (
+              <option value={_id} key={section}>
+                {section} —{" "}
+                {(instructors && instructors.join(", ")) ||
+                  "no listed instructors"}
+              </option>
+            );
+          })}
+        </Select>
+      </FormElement>
+
+      <FormElement>
+        <label>
+          Instruction Rating <Red>*</Red>
+        </label>
         <Stars
           value={formState.instructor_rating}
           handleChange={(val) =>
@@ -134,7 +214,9 @@ const EvaluationForm = () => {
       </FormElement>
 
       <FormElement>
-        <label>Course Rating</label>
+        <label>
+          Course Rating <Red>*</Red>
+        </label>
         <Stars
           value={formState.course_rating}
           handleChange={(val) =>
@@ -144,7 +226,9 @@ const EvaluationForm = () => {
       </FormElement>
 
       <FormElement>
-        <label>Hours per Week Outside of Class</label>
+        <label>
+          Hours per Week Outside of Class <Red>*</Red>
+        </label>
         <Input
           type="number"
           min="0"
@@ -156,7 +240,9 @@ const EvaluationForm = () => {
       </FormElement>
 
       <FormElement>
-        <label>Difficulty Rating</label>
+        <label>
+          Difficulty Rating <Red>*</Red>
+        </label>
         <Stars
           value={formState.difficulty_rating}
           handleChange={(val) =>
@@ -177,7 +263,11 @@ const EvaluationForm = () => {
       </FormElement>
 
       <ButtonsContainer>
-        <Button className="btn btn-primary" onClick={handleSubmit}>
+        <Button
+          className="btn btn-primary"
+          onClick={handleSubmit}
+          style={{ backgroundColor: "#7073fb", borderColor: "#7073fb" }}
+        >
           Submit
         </Button>
         <Button className="btn btn btn-secondary" onClick={handleCancel}>

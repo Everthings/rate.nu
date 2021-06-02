@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useMediaQuery } from "react-responsive";
 import rate_logo from "./../../images/cover_no_background.png";
+import { Link } from "react-router-dom";
 import SearchBar from "./searchBar";
 
 const Nav = styled.nav`
@@ -32,6 +33,9 @@ const Navbar = () => {
     <Nav className="navbar navbar-light">
       {bigScreen && <Logo src={rate_logo} alt="Logo" />}
       <SearchBar />
+      <Link to="/login" style={{ color: "#fff", marginLeft: "2rem" }}>
+        Login
+      </Link>
     </Nav>
   );
 };
