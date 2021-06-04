@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useMediaQuery } from "react-responsive";
+import { date2Text } from "../../utils/dateUtils";
 import Stars from "./stars";
 
 const Container = styled.div`
@@ -26,7 +27,9 @@ const Box = styled.div`
     max-width: 100%;
     margin-right: 0;
   }
+`;
 
+const Row = styled.div`
   display: flex;
   flex-direction: row;
 `;
@@ -39,6 +42,11 @@ const RightPart = styled.div`
   flex: 1;
   padding: 0 10px;
   min-width: 100px;
+`;
+
+const BottomPart = styled.div`
+  margin-top: 0.5rem;
+  text-align: center;
 `;
 
 const TextBox = styled.p`
@@ -86,29 +94,32 @@ const EvalsBox = ({ evals }) => {
         }) => {
           return (
             <Box key={_id}>
-              <LeftPart>
-                <TextBox>{comments}</TextBox>
-              </LeftPart>
-              {!smallScreen && (
-                <RightPart>
-                  <Rating>
-                    <Label>course rating</Label>
-                    <Stars value={course_rating} />
-                  </Rating>
-                  <Rating>
-                    <Label>instructor rating</Label>
-                    <Stars value={instructor_rating} />
-                  </Rating>
-                  <Rating>
-                    <Label>difficulty rating</Label>
-                    <Stars value={difficulty_rating} />
-                  </Rating>
-                  <Rating>
-                    <Label>hours outside of class</Label>
-                    <Text>{extra_hours}</Text>
-                  </Rating>
-                </RightPart>
-              )}
+              <Row>
+                <LeftPart>
+                  <TextBox>{comments}</TextBox>
+                </LeftPart>
+                {!smallScreen && (
+                  <RightPart>
+                    <Rating>
+                      <Label>course rating</Label>
+                      <Stars value={course_rating} />
+                    </Rating>
+                    <Rating>
+                      <Label>instructor rating</Label>
+                      <Stars value={instructor_rating} />
+                    </Rating>
+                    <Rating>
+                      <Label>difficulty rating</Label>
+                      <Stars value={difficulty_rating} />
+                    </Rating>
+                    <Rating>
+                      <Label>hours outside of class</Label>
+                      <Text>{extra_hours}</Text>
+                    </Rating>
+                  </RightPart>
+                )}
+              </Row>
+              <BottomPart>— {date2Text(timestamp)} —</BottomPart>
             </Box>
           );
         }
