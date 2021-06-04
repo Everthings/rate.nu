@@ -6,7 +6,8 @@ import config from "./../../config";
 import { averageData } from "../../utils/dataUtils";
 import { IconButton, Icon } from "rsuite";
 import OverallBox from "./overallBox";
-import SectionsTable from "./sectionsTable";
+import SectionsDropdown from "./sectionsDropdown";
+import EvalsBox from "./evalsBox";
 
 const Container = styled.div`
   margin: 2rem calc(2rem -32px);
@@ -24,33 +25,31 @@ const LargeHeader = styled.h1``;
 
 const SmallHeader = styled.h2``;
 
-const Course = () => {
+const Section = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const { courseId } = useParams();
+  const { courseId, sectionId } = useParams();
 
   const [evals, setEvals] = useState([]);
   const [sections, setSections] = useState([]);
-  const [course, setCourse] = useState(null);
 
   useEffect(() => {
     async function fetchEvals() {
       const { data } = await axios.get(
-        `${config.eval_api}/evals/${courseId}?key=thisisasecret@!(*)_123`
+        `${config.eval_api}/evals/${courseId}/${sectionId}?key=thisisasecret@!(*)_123`
       );
       setEvals(data);
     }
-    async function fetchSections() {
+    async function fetchSection() {
       const { data } = await axios.get(
         `${config.search_api}/sections/${courseId}?key=thisisasecret@!(*)_123`
       );
       setSections(data.sections);
-      setCourse(data.course);
     }
     fetchEvals();
-    fetchSections();
-  }, [courseId]);
+    fetchSection();
+  }, [courseId, sectionId]);
 
   const handleClick = () => {
     history.push(`${location.pathname}/new-eval`);
@@ -58,17 +57,21 @@ const Course = () => {
 
   const overall = averageData(evals, [
     "course_rating",
+    "instructor_rating",
     "difficulty_rating",
     "extra_hours",
   ]);
 
+  const section = sections.find(({ _id }) => _id === sectionId);
+
   return (
     <Container>
       <SubContainer>
-        {course && (
+        {section && (
           <>
-            <LargeHeader>{`${course.subject} ${course.number}`}</LargeHeader>
-            <SmallHeader>{course.title}</SmallHeader>
+            <LargeHeader>{`${section.subject} ${section.number}`}</LargeHeader>
+            <SmallHeader>{section.title}</SmallHeader>
+            <SectionsDropdown sections={sections} sectionId={sectionId} />
           </>
         )}
       </SubContainer>
@@ -80,9 +83,9 @@ const Course = () => {
       </SubContainer>
       <SubContainer>
         <h4>
-          <u>sections</u>
+          <u>comments</u>
         </h4>
-        <SectionsTable sections={sections} evals={evals}></SectionsTable>
+        <EvalsBox evals={evals} />
       </SubContainer>
       <SubContainer>
         <IconButton
@@ -103,4 +106,4 @@ const Course = () => {
   );
 };
 
-export default Course;
+export default Section;

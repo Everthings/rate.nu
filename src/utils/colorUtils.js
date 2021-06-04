@@ -25,7 +25,7 @@ const getColor = (str, alpha = 1) => {
   return color;
 };
 
-const getRatingColor = (rating) => {
+const getRatingColor = (rating, opacity = 1) => {
   const interp = (endVal, startVal) =>
     ((endVal - startVal) * rating) / 5 + startVal;
 
@@ -40,7 +40,7 @@ const getRatingColor = (rating) => {
     interp(greenHSL[2], redHSL[2]),
   ];
 
-  return `hsl(${interpolate[0]}, ${interpolate[1]}%, ${interpolate[2]}%)`;
+  return `hsla(${interpolate[0]}, ${interpolate[1]}%, ${interpolate[2]}%, ${opacity})`;
 };
 
 export { getColor, getRatingColor };

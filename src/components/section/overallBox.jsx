@@ -6,7 +6,7 @@ const Box = styled.div`
   box-shadow: rgb(236 237 237 / 40%) 0px 2px 5px,
     rgb(142 147 148 / 20%) 0px 0px 5px;
   font-family: "Calibri", sans-serif;
-  max-width: 25rem;
+  max-width: 32rem;
 `;
 
 const Ratings = styled.div`
@@ -49,7 +49,12 @@ const Label = styled.div`
   color: #5e5e5e;
 `;
 
-const OverallBox = ({ course_rating, difficulty_rating, extra_hours }) => {
+const OverallBox = ({
+  course_rating,
+  difficulty_rating,
+  instructor_rating,
+  extra_hours,
+}) => {
   return (
     <Box>
       <Ratings>
@@ -59,6 +64,14 @@ const OverallBox = ({ course_rating, difficulty_rating, extra_hours }) => {
           </Value>
           <Label>
             Course <br /> Rating
+          </Label>
+        </Container>
+        <Container value={isNaN(instructor_rating) ? -1 : instructor_rating}>
+          <Value style={{ backgroundColor: getRatingColor(instructor_rating) }}>
+            {`${(isNaN(instructor_rating) && "-") || instructor_rating}`}
+          </Value>
+          <Label>
+            Instructor <br /> Rating
           </Label>
         </Container>
         <Container value={isNaN(difficulty_rating) ? -1 : difficulty_rating}>

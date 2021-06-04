@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import config from "./../../config";
@@ -103,7 +103,10 @@ const Red = styled.span`
 `;
 
 const EvaluationForm = () => {
-  const { courseId } = useParams();
+  const history = useHistory();
+  const location = useLocation();
+
+  const { courseId, sectionId } = useParams();
 
   const [formState, setFormState] = useState({
     user_id: 1,
@@ -116,6 +119,7 @@ const EvaluationForm = () => {
   });
 
   const [courseName, setCourseName] = useState("");
+  const [sectionName, setSectionName] = useState("");
   const [sectionOptions, setSectionOptions] = useState([]);
 
   const [error, setError] = useState(null);
@@ -130,22 +134,35 @@ const EvaluationForm = () => {
         const { subject, number, title } = data.course;
         setCourseName(`${subject} ${number} — ${title}`);
       }
+      const found = data.sections.find(({ _id }) => _id === sectionId);
+      if (found) {
+        const { section, instructors } = found;
+        setSectionName(
+          `${section} — ${
+            (instructors && instructors.join(", ")) || "no listed instructors"
+          }`
+        );
+      }
     }
     fetchData();
-  }, [courseId]);
+  }, [courseId, sectionId]);
 
   const handleSubmit = async () => {
     try {
       await axios.post(`${config.eval_api}/evals?key=thisisasecret@!(*)_123`, {
         ...formState,
         course_id: courseId,
+        section_id: sectionId ? sectionId : formState.section_id,
       });
+      history.push(location.pathname.split("/new-eval")[0]);
     } catch (err) {
       setError(err.response.data.message);
     }
   };
 
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    history.push(location.pathname.split("/new-eval")[0]);
+  };
 
   const handleChange = (target) => {
     let value = target.value;
@@ -180,25 +197,28 @@ const EvaluationForm = () => {
         <label>
           Section <Red>*</Red>
         </label>
-        <Select
-          onChange={(e) => {
-            handleChange({
-              name: "section_id",
-              value: e.target[e.target.selectedIndex].value,
-            });
-          }}
-        >
-          <option value={-1}>-</option>
-          {sectionOptions.map(({ _id, section, instructors }) => {
-            return (
-              <option value={_id} key={section}>
-                {section} —{" "}
-                {(instructors && instructors.join(", ")) ||
-                  "no listed instructors"}
-              </option>
-            );
-          })}
-        </Select>
+        {!sectionId && (
+          <Select
+            onChange={(e) => {
+              handleChange({
+                name: "section_id",
+                value: e.target[e.target.selectedIndex].value,
+              });
+            }}
+          >
+            <option value={-1}>-</option>
+            {sectionOptions.map(({ _id, section, instructors }) => {
+              return (
+                <option value={_id} key={section}>
+                  {section} —{" "}
+                  {(instructors && instructors.join(", ")) ||
+                    "no listed instructors"}
+                </option>
+              );
+            })}
+          </Select>
+        )}
+        {sectionId && <Input type="text" value={sectionName} disabled />}
       </FormElement>
 
       <FormElement>
