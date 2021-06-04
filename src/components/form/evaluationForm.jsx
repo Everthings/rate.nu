@@ -59,6 +59,8 @@ const Select = styled.select`
   border-radius: 3px;
   padding: 6px;
 
+  outline: none;
+
   :hover {
     border: 2px solid #bfbfbf;
   }

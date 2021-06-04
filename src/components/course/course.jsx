@@ -74,7 +74,7 @@ const Course = () => {
       </SubContainer>
       <SubContainer>
         <h4>
-          <u>overall</u>
+          <u>course overall</u> ({evals.length} evals)
         </h4>
         <OverallBox {...overall} />
       </SubContainer>

@@ -21,6 +21,15 @@ const SubContainer = styled.div`
   margin-bottom: 1.5rem;
 `;
 
+const Headers = styled.div`
+  :hover {
+    margin: 0 -5px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background-color: #e7e8ec;
+  }
+`;
+
 const LargeHeader = styled.h1``;
 
 const SmallHeader = styled.h2``;
@@ -51,7 +60,13 @@ const Section = () => {
     fetchSection();
   }, [courseId, sectionId]);
 
-  const handleClick = () => {
+  const handleHeadersClick = () => {
+    history.push(
+      `${location.pathname.substring(0, location.pathname.lastIndexOf("/"))}`
+    );
+  };
+
+  const handleButtonClick = () => {
     history.push(`${location.pathname}/new-eval`);
   };
 
@@ -69,15 +84,17 @@ const Section = () => {
       <SubContainer>
         {section && (
           <>
-            <LargeHeader>{`${section.subject} ${section.number}`}</LargeHeader>
-            <SmallHeader>{section.title}</SmallHeader>
+            <Headers onClick={handleHeadersClick}>
+              <LargeHeader>{`${section.subject} ${section.number}`}</LargeHeader>
+              <SmallHeader>{section.title}</SmallHeader>
+            </Headers>
             <SectionsDropdown sections={sections} sectionId={sectionId} />
           </>
         )}
       </SubContainer>
       <SubContainer>
         <h4>
-          <u>overall</u>
+          <u>section overall</u> ({evals.length} evals)
         </h4>
         <OverallBox {...overall} />
       </SubContainer>
@@ -89,7 +106,7 @@ const Section = () => {
       </SubContainer>
       <SubContainer>
         <IconButton
-          onClick={handleClick}
+          onClick={handleButtonClick}
           icon={
             <Icon
               icon="plus"
