@@ -5,13 +5,17 @@ import Navbar from "./components/navbar/navbar";
 import Course from "./components/course/course";
 import Section from "./components/section/section";
 import EvaluationForm from "./components/form/evaluationForm";
+import Login from "./components/login/login";
 
 function App() {
   return (
     <Router>
       <Navbar />
       <Switch>
-        <Route path="/login"></Route>
+        <Route path="/signup"></Route>
+        <Route path="/login">
+          <Login />
+        </Route>
         <Route path="/course/:courseId/:sectionId/new-eval">
           <EvaluationForm />
         </Route>

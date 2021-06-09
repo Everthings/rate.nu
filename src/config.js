@@ -1,6 +1,7 @@
 const configs = {
-  search_api: "https://rate-search-api.herokuapp.com",
-  eval_api: "https://rate-backend-api.herokuapp.com",
+  search_api: "http://search.nulabs.io",
+  eval_api: "http://backend.nulabs.io", // allow cross domain
+  auth_api: "http://auth.nulabs.io",
 };
 
 export default configs;

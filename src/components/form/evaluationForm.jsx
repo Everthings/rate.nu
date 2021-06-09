@@ -151,14 +151,23 @@ const EvaluationForm = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`${config.eval_api}/evals?key=thisisasecret@!(*)_123`, {
-        ...formState,
-        course_id: courseId,
-        section_id: sectionId ? sectionId : formState.section_id,
-      });
+      await axios.post(
+        `${config.eval_api}/evals?key=thisisasecret@!(*)_123`,
+        {
+          ...formState,
+          course_id: courseId,
+          section_id: sectionId ? sectionId : formState.section_id,
+        },
+        { withCredentials: true }
+      );
       history.push(location.pathname.split("/new-eval")[0]);
     } catch (err) {
-      setError(err.response.data.message);
+      const status = err.response.status;
+      if (status === 401 || status === 403) {
+        setError("user must be logged in");
+      } else {
+        setError(err.response.data.message);
+      }
     }
   };
 
