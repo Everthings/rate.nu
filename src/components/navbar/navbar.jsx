@@ -1,5 +1,6 @@
-import styled from "styled-components";
+import { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
+import styled from "styled-components";
 import rate_logo from "./../../images/cover_no_background.png";
 import { Link } from "react-router-dom";
 import SearchBar from "./searchBar";
@@ -28,6 +29,8 @@ const Navbar = () => {
   const bigScreen = useMediaQuery({
     query: "(min-width: 992px)",
   });
+
+  useEffect(() => {}, []); // fetch user info
 
   return (
     <Nav className="navbar navbar-light">

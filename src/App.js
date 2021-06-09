@@ -6,13 +6,16 @@ import Course from "./components/course/course";
 import Section from "./components/section/section";
 import EvaluationForm from "./components/form/evaluationForm";
 import Login from "./components/login/login";
+import SignUp from "./components/signup/signup";
 
 function App() {
   return (
     <Router>
       <Navbar />
       <Switch>
-        <Route path="/signup"></Route>
+        <Route path="/signup">
+          <SignUp />
+        </Route>
         <Route path="/login">
           <Login />
         </Route>
